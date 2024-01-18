@@ -32,7 +32,7 @@ class IDs:
 
 @dataclasses.dataclass
 class Var:
-    name: str = ""
+    text: str = ""
     id: ID = 0
 
 
@@ -47,10 +47,11 @@ type Params[T] = typing.List[Param[T]]
 
 @dataclasses.dataclass
 class Def[T]:
+    loc: Loc
     name: Var
     params: Params[T]
     ret: T
     body: T
 
 
-type Defs = typing.List[Def]
+type Defs[T] = typing.List[Def[T]]

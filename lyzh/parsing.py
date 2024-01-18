@@ -105,7 +105,7 @@ def ident(v: core.Var) -> Parser:
                 break
             s = s.eat(c)
 
-        v.name = s.text(start)
+        v.text = s.text(start)
         v.id = s.ids.next()
         return s
 

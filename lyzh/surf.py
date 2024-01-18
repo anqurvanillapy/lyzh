@@ -22,7 +22,7 @@ LPAREN = parsing.word("(")
 RPAREN = parsing.word(")")
 COLON = parsing.word(":")
 ARROW = parsing.word("->")
-FN = parsing.word("fn")
+PIPE = parsing.word("|")
 LBRACE = parsing.word("{")
 RBRACE = parsing.word("}")
 
@@ -36,6 +36,7 @@ def prog(ds: typing.List[core.Def[conc.Expr]]) -> parsing.Parser:
 
 def defn(ds: typing.List[core.Def[conc.Expr]]) -> parsing.Parser:
     def parse(s: parsing.Source) -> parsing.Source:
+        loc = s.cur()
         name = core.Var()
         ps = []
         ret = ExprParser()
@@ -44,13 +45,13 @@ def defn(ds: typing.List[core.Def[conc.Expr]]) -> parsing.Parser:
             DEF,
             parsing.ident(name),
             parsing.many(param(ps)),
-            COLON,
+            ARROW,
             ret.expr(),
             LBRACE,
             body.expr(),
             RBRACE,
         )(s)
-        ds.append(core.Def(name, ps, ret.e, body.e))
+        ds.append(core.Def(loc, name, ps, ret.e, body.e))
         return s
 
     return parse
@@ -95,7 +96,14 @@ class ExprParser:
             loc = s.cur()
             x = core.Var()
             body = ExprParser()
-            s = parsing.seq(FN, parsing.ident(x), COLON, body.expr())(s)
+            s = parsing.seq(
+                PIPE,
+                parsing.ident(x),
+                PIPE,
+                LBRACE,
+                body.expr(),
+                RBRACE,
+            )(s)
             self.e = conc.Fn(loc, x, body.e)
             return s
 
