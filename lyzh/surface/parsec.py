@@ -1,5 +1,4 @@
-import typing
-import dataclasses
+import typing, dataclasses
 
 import lyzh.core as core
 
@@ -11,14 +10,9 @@ class Error(Exception):
 @dataclasses.dataclass
 class Source:
     src: str
-    loc: core.Loc
     ids: core.IDs
+    loc: core.Loc = dataclasses.field(default_factory=core.Loc)
     last_err: typing.Optional[Error] = None
-
-    def __init__(self, src: str):
-        self.src = src
-        self.loc = core.Loc()
-        self.ids = core.IDs()
 
     def cur(self) -> core.Loc:
         return core.Loc(self.loc.pos, self.loc.ln, self.loc.col)

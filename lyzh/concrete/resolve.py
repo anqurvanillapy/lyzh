@@ -1,8 +1,7 @@
-import dataclasses
-import typing
+import dataclasses, typing
 
 import lyzh.core as core
-import lyzh.conc.data as conc
+import lyzh.concrete.data as cst
 
 
 class Error(Exception):
@@ -14,10 +13,10 @@ class Resolver:
     ctx: typing.Dict[str, core.Var] = dataclasses.field(default_factory=dict)
     names: typing.Set[str] = dataclasses.field(default_factory=set)
 
-    def resolve(self, defs: core.Defs[conc.Expr]) -> core.Defs[conc.Expr]:
+    def resolve(self, defs: core.Defs[cst.Expr]) -> core.Defs[cst.Expr]:
         return [self.resolve_def(d) for d in defs]
 
-    def resolve_def(self, d: core.Def[conc.Expr]) -> core.Def[conc.Expr]:
+    def resolve_def(self, d: core.Def[cst.Expr]) -> core.Def[cst.Expr]:
         recoverable = []
         removable = []
 
@@ -28,7 +27,7 @@ class Resolver:
                 recoverable.append(old)
             else:
                 removable.append(p.name)
-            params.append(core.Param[conc.Expr](p.name, self.resolve_expr(p.type)))
+            params.append(core.Param[cst.Expr](p.name, self.resolve_expr(p.type)))
 
         ret = self.resolve_expr(d.ret)
         body = self.resolve_expr(d.body)
@@ -43,30 +42,29 @@ class Resolver:
         self.names.add(d.name.text)
         self.insert(d.name)
 
-        return core.Def[conc.Expr](d.loc, d.name, params, ret, body)
+        return core.Def[cst.Expr](d.loc, d.name, params, ret, body)
 
-    def resolve_expr(self, e: conc.Expr) -> conc.Expr:
+    def resolve_expr(self, e: cst.Expr) -> cst.Expr:
         match e:
-            case conc.Unresolved(loc, v):
+            case cst.Unresolved(loc, v):
                 try:
-                    return conc.Resolved(loc, self.ctx[v.text])
+                    return cst.Resolved(loc, self.ctx[v.text])
                 except KeyError:
                     raise Error(f"{loc.ln}:{loc.col}: unresolved variable '{v.text}'")
-            case conc.Fn(loc, v, body):
+            case cst.Fn(loc, v, body):
                 b = self.guard(v, body)
-                return conc.Fn(loc, v, b)
-            case conc.App(loc, f, x):
-                return conc.App(loc, self.resolve_expr(f), self.resolve_expr(x))
-            case conc.FnType(loc, p, body):
+                return cst.Fn(loc, v, b)
+            case cst.App(loc, f, x):
+                return cst.App(loc, self.resolve_expr(f), self.resolve_expr(x))
+            case cst.FnType(loc, p, body):
                 typ = self.resolve_expr(p.type)
                 b = self.guard(p.name, body)
-                return conc.FnType(loc, core.Param(p.name, typ), b)
-            case conc.Univ(_):
+                return cst.FnType(loc, core.Param(p.name, typ), b)
+            case cst.Univ(_):
                 return e
-            case conc.Resolved:
-                raise AssertionError("impossible")
+        raise AssertionError("impossible")
 
-    def guard(self, v: core.Var, e: conc.Expr) -> conc.Expr:
+    def guard(self, v: core.Var, e: cst.Expr) -> cst.Expr:
         old = self.insert(v)
         ret = self.resolve_expr(e)
         if old:

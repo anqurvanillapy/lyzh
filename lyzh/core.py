@@ -1,5 +1,4 @@
-import dataclasses
-import typing
+import dataclasses, typing
 
 
 @dataclasses.dataclass
@@ -22,6 +21,12 @@ type ID = int
 
 
 @dataclasses.dataclass
+class Var:
+    text: str = ""
+    id: ID = 0
+
+
+@dataclasses.dataclass
 class IDs:
     n: ID = 0
 
@@ -29,11 +34,8 @@ class IDs:
         self.n += 1
         return self.n
 
-
-@dataclasses.dataclass
-class Var:
-    text: str = ""
-    id: ID = 0
+    def rename(self, v: Var) -> Var:
+        return Var(v.text, self.next())
 
 
 @dataclasses.dataclass
