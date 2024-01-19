@@ -24,8 +24,7 @@ class Normalizer:
                 x = self.term(x)
                 match f:
                     case ast.Fn(p, b):
-                        self.env[p.name.id] = x
-                        return self.term(b)
+                        return self.term_with((p.name, x), b)
                     case _:
                         return ast.App(f, x)
             case ast.Fn(p, b):
@@ -38,3 +37,18 @@ class Normalizer:
 
     def param(self, p: core.Param[ast.Term]) -> core.Param[ast.Term]:
         return core.Param[ast.Term](p.name, self.term(p.type))
+
+    def term_with(self, m: typing.Tuple[core.Var, ast.Term], tm: ast.Term) -> ast.Term:
+        (v, x) = m
+        self.env[v.id] = x
+        return self.term(tm)
+
+    def apply(self, f: ast.Term, *args: ast.Term) -> ast.Term:
+        ret = f
+        for x in args:
+            match f:
+                case ast.Fn(p, b):
+                    ret = self.term_with((p.name, x), b)
+                case _:
+                    ret = ast.App(ret, x)
+        return ret
