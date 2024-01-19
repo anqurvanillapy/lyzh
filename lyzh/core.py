@@ -1,4 +1,5 @@
-import dataclasses, typing
+import dataclasses
+import typing
 
 
 @dataclasses.dataclass

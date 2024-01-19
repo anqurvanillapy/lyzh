@@ -1,4 +1,5 @@
-import typing, dataclasses
+import dataclasses
+import typing
 
 import lyzh.core as core
 

@@ -1,7 +1,8 @@
-import typing, dataclasses
+import dataclasses
+import typing
 
-import lyzh.core as core
 import lyzh.abstract.data as ast
+import lyzh.core as core
 
 
 @dataclasses.dataclass

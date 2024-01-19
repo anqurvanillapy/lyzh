@@ -1,9 +1,10 @@
-import sys, typing
+import sys
+import typing
 
-import lyzh.core as core
-import lyzh.surface.parsec as parsec
-import lyzh.surface.grammar as grammar
 import lyzh.concrete.resolve as resolve
+import lyzh.core as core
+import lyzh.surface.grammar as grammar
+import lyzh.surface.parsec as parsec
 
 
 def fatal(m: str | Exception) -> typing.Never:

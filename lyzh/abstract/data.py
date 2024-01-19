@@ -1,4 +1,5 @@
 import dataclasses
+import typing
 
 import lyzh.core as core
 
@@ -34,3 +35,6 @@ class Fn(Term):
 class App(Term):
     f: Term
     x: Term
+
+
+type Globals = typing.Dict[core.ID, core.Def[Term]]

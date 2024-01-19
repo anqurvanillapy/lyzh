@@ -1,7 +1,8 @@
-import dataclasses, typing
+import dataclasses
+import typing
 
-import lyzh.core as core
 import lyzh.concrete.data as cst
+import lyzh.core as core
 
 
 class Error(Exception):
