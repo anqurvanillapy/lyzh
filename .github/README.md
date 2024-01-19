@@ -20,7 +20,7 @@ python -m lyzh example.lyzh
 由于整个类型系统里面能用的东西不多, 所以很难写一些真正有意义的事情, 所以这里建议大家把代码用自己喜欢的语言抄一遍,
 然后阅读自己喜欢的纸, 往自己的语言里面添加 `string`, `number`, `i32`, tuple, enum, record, 这样那样好玩的类型吧!
 
-当然了, 一些 function pearls 还是可以玩的. :)
+当然了, 一些 functional pearls 还是可以玩的. :)
 
 比如说 Church numerals:
 
