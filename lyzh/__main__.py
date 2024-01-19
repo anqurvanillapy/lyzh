@@ -25,18 +25,14 @@ try:
 except ValueError:
     fatal("usage: lyzh FILE")
 
-# 加载源文件, 并解析出所有定义.
 try:
+    # 加载源文件, 并解析出所有定义.
     with open(file) as f:
         grammar.prog(defs)(parsec.Source(f.read(), ids))
-except FileNotFoundError as e:
-    fatal(e)
-except parsec.Error as e:
-    fatal(f"{file}:{e}")
-
-# 解析所有定义中的引用, 并开始类型检查.
-try:
+    # 解析所有定义中的引用, 并开始类型检查.
     well_typed = elab.Elaborator(ids).elaborate(resolve.Resolver().resolve(defs))
     print("\n\n".join(str(d) for d in well_typed))
-except (resolve.Error, elab.Error) as e:
+except FileNotFoundError as e:
+    fatal(e)
+except (parsec.Error, resolve.Error, elab.Error) as e:
     fatal(f"{file}:{e}")
