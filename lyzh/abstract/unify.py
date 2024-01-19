@@ -17,11 +17,11 @@ class Unifier:
             case ast.App(f, x), ast.App(g, y):
                 return self.unify(f, g) and self.unify(x, y)
             case ast.Fn(p, b), ast.Fn(q, c):
-                return self.unify(b, self.nf().term_with((q.name, ast.Ref(p.name)), c))
+                return self.unify(b, self.nf().subst((q.name, ast.Ref(p.name)), c))
             case ast.FnType(p, b), ast.FnType(q, c):
                 if not self.unify(p.type, q.type):
                     return False
-                return self.unify(b, self.nf().term_with((q.name, ast.Ref(p.name)), c))
+                return self.unify(b, self.nf().subst((q.name, ast.Ref(p.name)), c))
             case ast.Univ(), ast.Univ():
                 return True
         return False

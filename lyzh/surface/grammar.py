@@ -74,7 +74,9 @@ class ExprParser:
 
     def primary_expr(self) -> parsec.Parser:
         def parse(s: parsec.Source) -> parsec.Source:
-            return parsec.choice(self.fn(), self.ref(), self.paren_expr())(s)
+            return parsec.choice(self.fn(), self.univ(), self.ref(), self.paren_expr())(
+                s
+            )
 
         return parse
 
@@ -103,7 +105,7 @@ class ExprParser:
             loc = s.cur()
             f = ExprParser()
             x = ExprParser()
-            s = parsec.seq(f.primary_expr(), x.expr())(s)
+            s = parsec.seq(f.primary_expr(), x.primary_expr())(s)
             self.e = cst.App(loc, f.e, x.e)
             return s
 

@@ -40,7 +40,7 @@ class Source:
         loc = self.cur()
         n = self.next()
         if n != c:
-            raise Error(f"{loc.ln}:{loc.col}: expected '{c}', got '{n}'")
+            raise Error(f"{loc}: expected '{c}', got '{n}'")
         return self
 
     def skip_spaces(self) -> typing.Self:
@@ -62,7 +62,7 @@ type Parser = typing.Callable[[Source], Source]
 
 def soi(s: Source) -> Source:
     if s.loc.pos != 0:
-        raise Error(f"{s.loc.ln}:{s.loc.col}: expected start of input")
+        raise Error(f"{s.loc}: expected start of input")
     return s
 
 
@@ -70,7 +70,7 @@ def eoi(s: Source) -> Source:
     if s.loc.pos != len(s.src):
         if s.last_err:
             raise s.last_err
-        raise Error(f"{s.loc.ln}:{s.loc.col}: expected end of input")
+        raise Error(f"{s.loc}: expected end of input")
     return s
 
 
@@ -89,7 +89,7 @@ def ident(v: core.Var) -> Parser:
 
         first = s.peek()
         if not first or not first.islower() or not first.isalpha():
-            raise Error(f"{s.loc.ln}:{s.loc.col}: expected identifier")
+            raise Error(f"{s.loc}: expected identifier")
         s = s.eat(first)
 
         while True:
@@ -128,7 +128,7 @@ def choice(*parsers: Parser) -> Parser:
             except Error as e:
                 s = s.back(loc, e)
         msg = ", ".join([r.__doc__ for r in parsers])
-        raise Error(f"{s.loc.ln}:{s.loc.col}: expected {msg}")
+        raise Error(f"{s.loc}: expected {msg}")
 
     return parse
 

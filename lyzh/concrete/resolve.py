@@ -39,7 +39,7 @@ class Resolver:
             self.insert(v)
 
         if d.name.text in self.names:
-            raise Error(f"{d.loc.ln}:{d.loc.col}: duplicate name '{d.name.text}'")
+            raise Error(f"{d.loc}: duplicate name '{d.name.text}'")
         self.names.add(d.name.text)
         self.insert(d.name)
 
@@ -51,7 +51,7 @@ class Resolver:
                 try:
                     return cst.Resolved(loc, self.ctx[v.text])
                 except KeyError:
-                    raise Error(f"{loc.ln}:{loc.col}: unresolved variable '{v.text}'")
+                    raise Error(f"{loc}: unresolved variable '{v.text}'")
             case cst.Fn(loc, v, body):
                 b = self.guard(v, body)
                 return cst.Fn(loc, v, b)

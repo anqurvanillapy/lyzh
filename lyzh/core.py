@@ -8,6 +8,9 @@ class Loc:
     ln: int = 1
     col: int = 1
 
+    def __str__(self):
+        return f"{self.ln}:{self.col}"
+
     def next_line(self):
         self.pos += 1
         self.ln += 1
@@ -25,6 +28,9 @@ type ID = int
 class Var:
     text: str = ""
     id: ID = 0
+
+    def __str__(self):
+        return self.text
 
 
 @dataclasses.dataclass
@@ -44,6 +50,9 @@ class Param[T]:
     name: Var
     type: T
 
+    def __str__(self):
+        return f"({self.name}: {self.type})"
+
 
 type Params[T] = typing.List[Param[T]]
 
@@ -55,6 +64,10 @@ class Def[T]:
     params: Params[T]
     ret: T
     body: T
+
+    def __str__(self):
+        params = " ".join(str(p) for p in self.params)
+        return f"fn {self.name}{params} -> {self.ret} {{\n\t{self.body}\n}}"
 
 
 type Defs[T] = typing.List[Def[T]]
