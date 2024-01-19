@@ -1,26 +1,29 @@
 import sys
+import typing
 
-import lyzh.parsing as parsing
-import lyzh.surf as surf
+import lyzh.surf.parsec as parsec
+import lyzh.surf.grammar as grammar
 import lyzh.conc.resolve as resolve
+
+
+def fatal(m: str | Exception) -> typing.Never:
+    print(m)
+    sys.exit(1)
+
 
 try:
     _, file, *_ = sys.argv
 except ValueError:
-    print("usage: lyzh FILE")
-    sys.exit(1)
+    fatal("usage: lyzh FILE")
 
 try:
-    defs = surf.parse_file(file)
-except parsing.Error as e:
-    print(f"{file}:{e}")
-    sys.exit(1)
+    defs = grammar.parse_file(file)
+except parsec.Error as e:
+    fatal(f"{file}:{e}")
 except FileNotFoundError as e:
-    print(e)
-    sys.exit(1)
+    fatal(e)
 
 try:
     print(resolve.Resolver().resolve(defs))
 except resolve.Error as e:
-    print(f"{file}:{e}")
-    sys.exit(1)
+    fatal(f"{file}:{e}")

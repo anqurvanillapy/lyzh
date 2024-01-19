@@ -2,7 +2,7 @@ import typing
 
 import lyzh.conc.data as conc
 import lyzh.core as core
-import lyzh.parsing as parsing
+import lyzh.surf.parsec as parsec
 
 
 def parse_file(f: str) -> typing.List[core.Def[conc.Expr]]:
@@ -12,39 +12,39 @@ def parse_file(f: str) -> typing.List[core.Def[conc.Expr]]:
 
 def parse_text(text: str) -> typing.List[core.Def[conc.Expr]]:
     defs = []
-    prog(defs)(parsing.Source(text))
+    prog(defs)(parsec.Source(text))
     return defs
 
 
-DEF = parsing.word("fn")
-TYPE = parsing.word("type")
-LPAREN = parsing.word("(")
-RPAREN = parsing.word(")")
-COLON = parsing.word(":")
-ARROW = parsing.word("->")
-PIPE = parsing.word("|")
-LBRACE = parsing.word("{")
-RBRACE = parsing.word("}")
+DEF = parsec.word("fn")
+TYPE = parsec.word("type")
+LPAREN = parsec.word("(")
+RPAREN = parsec.word(")")
+COLON = parsec.word(":")
+ARROW = parsec.word("->")
+PIPE = parsec.word("|")
+LBRACE = parsec.word("{")
+RBRACE = parsec.word("}")
 
 
-def prog(ds: typing.List[core.Def[conc.Expr]]) -> parsing.Parser:
-    def parse(s: parsing.Source) -> parsing.Source:
-        return parsing.seq(parsing.soi, parsing.many(defn(ds)), parsing.eoi)(s)
+def prog(ds: typing.List[core.Def[conc.Expr]]) -> parsec.Parser:
+    def parse(s: parsec.Source) -> parsec.Source:
+        return parsec.seq(parsec.soi, parsec.many(defn(ds)), parsec.eoi)(s)
 
     return parse
 
 
-def defn(ds: typing.List[core.Def[conc.Expr]]) -> parsing.Parser:
-    def parse(s: parsing.Source) -> parsing.Source:
+def defn(ds: typing.List[core.Def[conc.Expr]]) -> parsec.Parser:
+    def parse(s: parsec.Source) -> parsec.Source:
         loc = s.cur()
         name = core.Var()
         ps = []
         ret = ExprParser()
         body = ExprParser()
-        s = parsing.seq(
+        s = parsec.seq(
             DEF,
-            parsing.ident(name),
-            parsing.many(param(ps)),
+            parsec.ident(name),
+            parsec.many(param(ps)),
             ARROW,
             ret.expr(),
             LBRACE,
@@ -57,11 +57,11 @@ def defn(ds: typing.List[core.Def[conc.Expr]]) -> parsing.Parser:
     return parse
 
 
-def param(ps: core.Params) -> parsing.Parser:
-    def parse(s: parsing.Source) -> parsing.Source:
+def param(ps: core.Params) -> parsec.Parser:
+    def parse(s: parsec.Source) -> parsec.Source:
         v = core.Var()
         typ = ExprParser()
-        s = parsing.seq(LPAREN, parsing.ident(v), COLON, typ.expr(), RPAREN)(s)
+        s = parsec.seq(LPAREN, parsec.ident(v), COLON, typ.expr(), RPAREN)(s)
         ps.append(core.Param(v, typ.e))
         return s
 
@@ -71,9 +71,9 @@ def param(ps: core.Params) -> parsing.Parser:
 class ExprParser:
     e: typing.Optional[conc.Expr] = None
 
-    def expr(self) -> parsing.Parser:
-        def parse(s: parsing.Source) -> parsing.Source:
-            return parsing.choice(
+    def expr(self) -> parsec.Parser:
+        def parse(s: parsec.Source) -> parsec.Source:
+            return parsec.choice(
                 self.fn(),
                 self.fn_type(),
                 self.univ(),
@@ -84,21 +84,21 @@ class ExprParser:
 
         return parse
 
-    def primary_expr(self) -> parsing.Parser:
-        def parse(s: parsing.Source) -> parsing.Source:
-            return parsing.choice(self.fn(), self.ref(), self.paren_expr())(s)
+    def primary_expr(self) -> parsec.Parser:
+        def parse(s: parsec.Source) -> parsec.Source:
+            return parsec.choice(self.fn(), self.ref(), self.paren_expr())(s)
 
         return parse
 
-    def fn(self) -> parsing.Parser:
-        def parse(s: parsing.Source) -> parsing.Source:
+    def fn(self) -> parsec.Parser:
+        def parse(s: parsec.Source) -> parsec.Source:
             """fn"""
             loc = s.cur()
             x = core.Var()
             body = ExprParser()
-            s = parsing.seq(
+            s = parsec.seq(
                 PIPE,
-                parsing.ident(x),
+                parsec.ident(x),
                 PIPE,
                 LBRACE,
                 body.expr(),
@@ -109,32 +109,32 @@ class ExprParser:
 
         return parse
 
-    def app(self) -> parsing.Parser:
-        def parse(s: parsing.Source) -> parsing.Source:
+    def app(self) -> parsec.Parser:
+        def parse(s: parsec.Source) -> parsec.Source:
             """app"""
             loc = s.cur()
             f = ExprParser()
             x = ExprParser()
-            s = parsing.seq(f.primary_expr(), x.expr())(s)
+            s = parsec.seq(f.primary_expr(), x.expr())(s)
             self.e = conc.App(loc, f.e, x.e)
             return s
 
         return parse
 
-    def fn_type(self) -> parsing.Parser:
-        def parse(s: parsing.Source) -> parsing.Source:
+    def fn_type(self) -> parsec.Parser:
+        def parse(s: parsec.Source) -> parsec.Source:
             """fn_type"""
             loc = s.cur()
             ps = []
             body = ExprParser()
-            s = parsing.seq(param(ps), ARROW, body.expr())(s)
+            s = parsec.seq(param(ps), ARROW, body.expr())(s)
             self.e = conc.FnType(loc, ps[0], body.e)
             return s
 
         return parse
 
-    def univ(self) -> parsing.Parser:
-        def parse(s: parsing.Source) -> parsing.Source:
+    def univ(self) -> parsec.Parser:
+        def parse(s: parsec.Source) -> parsec.Source:
             """univ"""
             loc = s.cur()
             s = TYPE(s)
@@ -143,20 +143,20 @@ class ExprParser:
 
         return parse
 
-    def ref(self) -> parsing.Parser:
-        def parse(s: parsing.Source) -> parsing.Source:
+    def ref(self) -> parsec.Parser:
+        def parse(s: parsec.Source) -> parsec.Source:
             """ref"""
             loc = s.cur()
             v = core.Var()
-            s = parsing.ident(v)(s)
+            s = parsec.ident(v)(s)
             self.e = conc.Unresolved(loc, v)
             return s
 
         return parse
 
-    def paren_expr(self) -> parsing.Parser:
-        def parse(s: parsing.Source) -> parsing.Source:
+    def paren_expr(self) -> parsec.Parser:
+        def parse(s: parsec.Source) -> parsec.Source:
             """paren_expr"""
-            return parsing.seq(LPAREN, self.expr(), RPAREN)(s)
+            return parsec.seq(LPAREN, self.expr(), RPAREN)(s)
 
         return parse
