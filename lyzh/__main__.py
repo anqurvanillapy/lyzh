@@ -1,3 +1,5 @@
+"""命令行入口."""
+
 import sys
 import typing
 
@@ -15,13 +17,15 @@ def fatal(m: str | Exception) -> typing.Never:
 
 
 ids = core.IDs()
-defs: core.Defs[cst.Expr] = []
+defs: core.Defs[cst.Expr] = []  # 尚未检查类型的定义
 
+# 获取文件名.
 try:
     _, file, *_ = sys.argv
 except ValueError:
     fatal("usage: lyzh FILE")
 
+# 加载源文件, 并解析出所有定义.
 try:
     with open(file) as f:
         grammar.prog(defs)(parsec.Source(f.read(), ids))
@@ -30,6 +34,7 @@ except FileNotFoundError as e:
 except parsec.Error as e:
     fatal(f"{file}:{e}")
 
+# 解析所有定义中的引用, 并开始类型检查.
 try:
     well_typed = elab.Elaborator(ids).elaborate(resolve.Resolver().resolve(defs))
     print("\n\n".join(str(d) for d in well_typed))
