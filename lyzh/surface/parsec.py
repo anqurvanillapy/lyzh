@@ -25,7 +25,7 @@ class Source:
         return core.Loc(self.loc.pos, self.loc.ln, self.loc.col)
 
     def text(self, start: core.Loc) -> str:
-        """返回当前位置到起始位置的文本."""
+        """返回起始位置到当前位置的文本."""
         return self.src[start.pos : self.loc.pos]
 
     def peek(self) -> typing.Optional[str]:
