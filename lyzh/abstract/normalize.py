@@ -1,5 +1,9 @@
 """求值器, 将一个值转换为它的 normal form, 所谓 NbE (normalized by evaluation)
-就是在编译期间将可以计算的表达式通过求值 (evaluation) 转换为 normal form, 以供后续类型检查使用的算法理念."""
+就是在编译期间将可以计算的表达式通过求值 (evaluation) 转换为 normal form, 以供后续类型检查使用的算法理念.
+
+有趣的是, 如果你将 ast.Univ 和 ast.FnType 抛去, 仅仅留下 ast.App, ast.Ref 和 ast.Fn,
+那么这个求值器可以看作是 UTLC (untyped lambda calculus) 的求值器! 这也侧面说明了, 到达了
+abstract syntax 层面之后, 这些数值已经失去了相应的类型信息, 进行无类型的单纯的变量替换与求值."""
 
 import dataclasses
 import typing
