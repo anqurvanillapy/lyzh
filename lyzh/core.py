@@ -72,7 +72,21 @@ class Param[T]:
 
 
 type Params[T] = typing.List[Param[T]]
-"""参数列表, 学术里又叫做 telescope, context 等."""
+"""参数列表, 学术里又叫做 telescope, context 等, 有趣的是, telescope 就是中文里面说的
+"裂项", 至于为什么英文是 telescope, 可以假设你想看到天空中的某颗星星, 你手头有足量的 100
+倍镜, 10 倍镜, 和 1 倍镜, 你凑合了这几类倍镜之后, 最终在 114 倍的情况下看到这颗星星最为清晰,
+所以你可以认为观察天空中的星星是这么一个函数:
+
+```
+stargaze : (x : Scope100) -> (y : Scope10) -> (z : Scope1) -> Star
+stargaze = ...
+
+myStar : Star
+myStar = stargaze 1 1 4
+```
+
+输入一系列参数的函数, 就像是把弄一个天文望远镜上的各种不同的焦距旋钮, 故此得名.
+"""
 
 
 @dataclasses.dataclass
