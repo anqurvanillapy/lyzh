@@ -54,7 +54,55 @@ fn sym(t: type) (a: t) (b: t) (p: ((eq t) a) b) -> ((eq t) b) a {
 }
 ```
 
-用这几个定义来写点好玩的小证明吧!
+用这几个定义来写点好玩的小证明吧! 哦对了, 有人说要我上传下习题的答案 (
+
+* 用 `nat`、`add`、`mul` 写一些简单的计算:
+
+<details>
+<summary>答案</summary>
+
+```rs
+fn three -> nat {
+    |t| { |s| { |z| { s (s (s z)) } } }
+}
+
+fn six -> nat {
+    (add three) three
+}
+
+fn nine -> nat {
+    (mul three) three
+}
+```
+
+比如, 输出结果能看到 `six` 内部有 6 个 `f`, 说明计算成功.
+
+</details>
+
+* 用 `eq`、`refl`、`sym` 写一些简单的证明:
+
+<details>
+<summary>答案</summary>
+
+```rs
+fn a -> type {
+    type
+}
+
+fn b -> type {
+    type
+}
+
+fn lemma -> ((eq type) a) b {
+    (refl type) a
+}
+
+fn theorem(p: ((eq type) a) b) -> ((eq type) b) a {
+    (((sym type) a) b) lemma
+}
+```
+
+</details>
 
 [Lyzh]: https://github.com/imlyzh
 
