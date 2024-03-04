@@ -33,4 +33,4 @@ class Unifier:
         return False
 
     def nf(self) -> normalize.Normalizer:
-        return normalize.Normalizer(self.ids, self.globals)
+        return normalize.Normalizer(self.ids)

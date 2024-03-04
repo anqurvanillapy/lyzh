@@ -155,7 +155,7 @@ class Elaborator:
 
     def nf(self) -> normalize.Normalizer:
         """获取求值器."""
-        return normalize.Normalizer(self.ids, self.globals)
+        return normalize.Normalizer(self.ids)
 
     def unify(self, lhs: ast.Term, rhs: ast.Term) -> bool:
         """检查两个值是否相等."""

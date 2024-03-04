@@ -16,7 +16,6 @@ import lyzh.abstract.rename as rename
 @dataclasses.dataclass
 class Normalizer:
     ids: core.IDs
-    globals: ast.Globals
     # env 在学术里又叫做 rho, ρ, evaluation context, evaluation environment 等等,
     # 要时刻注意这里的映射值的结构是 ast.Term, 和 ast.Locals 不同, 它可以是类型 (type term),
     # 也可以是值 (value term), 因为这里要做的事情无非就是变量替换 (substitution).
