@@ -7,8 +7,7 @@ import typing
 import lyzh.core as core
 
 
-class Error(Exception):
-    pass
+class Error(Exception): ...
 
 
 @dataclasses.dataclass

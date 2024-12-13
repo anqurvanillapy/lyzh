@@ -7,10 +7,7 @@ import lyzh.core as core
 
 
 @dataclasses.dataclass
-class Term:
-    """数值父类."""
-
-    pass
+class Term: ...
 
 
 @dataclasses.dataclass
@@ -26,8 +23,6 @@ class Ref(Term):
 @dataclasses.dataclass
 class Univ(Term):
     """类型宇宙."""
-
-    pass
 
     def __str__(self):
         return "type"

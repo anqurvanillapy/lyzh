@@ -14,10 +14,7 @@ import lyzh.abstract.unify as unify
 import lyzh.abstract.rename as rename
 
 
-class Error(Exception):
-    """类型检查错误."""
-
-    pass
+class Error(Exception): ...
 
 
 @dataclasses.dataclass
@@ -99,7 +96,9 @@ class Elaborator:
                 #  Γ , A : type ⊢ M : type
                 # -------------------------- function type introduction rule
                 # Γ ⊢ π (A: type) → M : type
-                p_typ = self.check(p.type, ast.Univ())  # 参数类型的类型一定是 Univ, 但我们仍需要确保这一点
+                p_typ = self.check(
+                    p.type, ast.Univ()
+                )  # 参数类型的类型一定是 Univ, 但我们仍需要确保这一点
                 inferred_p = core.Param[ast.Term](p.name, p_typ)
                 # 在参数 p 的保护下, 检查 body 的类型.
                 b_tm = self.guarded_check(inferred_p, b, ast.Univ())
@@ -130,7 +129,7 @@ class Elaborator:
         raise AssertionError("impossible")
 
     def guarded_check(
-            self, p: core.Param[ast.Term], e: cst.Expr, typ: ast.Term
+        self, p: core.Param[ast.Term], e: cst.Expr, typ: ast.Term
     ) -> ast.Term:
         """在 p 的保护下 (即将 p 加入到本地变量中, 检查完毕后删除), 检查表达式 e 的类型是否为 typ."""
         self.locals[p.name.id] = p.type
@@ -142,7 +141,7 @@ class Elaborator:
         return ret
 
     def guarded_infer(
-            self, p: core.Param[ast.Term], e: cst.Expr
+        self, p: core.Param[ast.Term], e: cst.Expr
     ) -> typing.Tuple[ast.Term, ast.Term]:
         """在 p 的保护下 (即将 p 加入到本地变量中, 推导完毕后删除), 推导表达式 e 的类型."""
         self.locals[p.name.id] = p.type

@@ -49,7 +49,9 @@ def defn(ds: core.Defs[cst.Expr]) -> parsec.Parser:
     """解析一个函数定义, 成功则加入到 ds 中."""
 
     def parse(s: parsec.Source) -> parsec.Source:
-        loc = s.cur()  # 这里拿到的是 fn 关键词的位置, 我懒了, 拿到 name 的位置报错更友好
+        loc = (
+            s.cur()
+        )  # 这里拿到的是 fn 关键词的位置, 我懒了, 拿到 name 的位置报错更友好
         name = core.Var()
         ps = []
         ret = ExprParser()

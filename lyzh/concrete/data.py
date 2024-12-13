@@ -36,11 +36,9 @@ class FnType(Expr):
     body: Expr
 
 
+# Universe, 类型宇宙表达式, 也就是学术里的 type of type, 类型的类型.
 @dataclasses.dataclass
-class Univ(Expr):
-    """Universe, 类型宇宙表达式, 也就是学术里的 type of type, 类型的类型."""
-
-    pass
+class Univ(Expr): ...
 
 
 @dataclasses.dataclass

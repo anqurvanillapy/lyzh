@@ -7,10 +7,7 @@ import lyzh.concrete.data as cst
 import lyzh.core as core
 
 
-class Error(Exception):
-    """作用域检查错误."""
-
-    pass
+class Error(Exception): ...
 
 
 @dataclasses.dataclass
