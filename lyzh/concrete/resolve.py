@@ -1,4 +1,8 @@
-"""Resolving, 即 scope checking, 作用域检查."""
+"""\
+# Name resolving
+
+名称解析, 又称 scope checking, 作用域检查.
+"""
 
 import dataclasses
 import typing

@@ -1,4 +1,8 @@
-"""Concrete syntax, 这里的定义携带了位置信息, 并且可以用于深入求值计算."""
+"""\
+# Concrete syntax
+
+这里的语法定义携带了位置信息, 并且可以用于深入求值计算.
+"""
 
 import dataclasses
 

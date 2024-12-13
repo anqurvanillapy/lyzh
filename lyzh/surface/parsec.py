@@ -1,5 +1,10 @@
-"""一个简单的解析器组合子, 其实就是一堆好用的文本解析实用类. 建议使用报错更友好的库和框架来替代,
-这个文件可以跳过不看."""
+"""\
+# Parser combinator library
+
+一个简单的解析器组合子 (parser combinator), 其实就是一堆好用的文本解析实用类.
+
+建议使用报错更友好的库和框架来替代, 这个文件可以跳过不看.
+"""
 
 import dataclasses
 import typing
@@ -15,7 +20,6 @@ class Source:
     """源码解析状态, 可以认为是个不严格的 monad."""
 
     src: str  # 源码文本
-    ids: core.IDs
     loc: core.Loc = dataclasses.field(default_factory=core.Loc)
     last_err: typing.Optional[Error] = None  # 上一个发生的错误, 另见 back 方法
 
@@ -125,7 +129,7 @@ def ident(v: core.Var) -> Parser:
             s = s.eat(c)
 
         v.text = s.text(start)
-        v.id = s.ids.next()
+        v.id = core.fresh()
         return s
 
     return parse

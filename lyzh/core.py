@@ -1,4 +1,8 @@
-"""核心定义, 一些所有语法层级都使用得到的实用类."""
+"""\
+# Core
+
+核心定义, 一些所有语法层级都使用得到的实用类.
+"""
 
 import dataclasses
 import typing
@@ -45,19 +49,13 @@ class Var:
         return self.text
 
 
-@dataclasses.dataclass
-class IDs:
-    """变量 ID 生成器."""
+_NEXT_ID = 0
 
-    n: ID = 0
 
-    def next(self) -> ID:
-        self.n += 1
-        return self.n
-
-    def rename(self, v: Var) -> Var:
-        """更换这个变量的 ID, 另见 lyzh.abstract.rename.Renamer 类."""
-        return Var(v.text, self.next())
+def fresh() -> ID:
+    global _NEXT_ID
+    _NEXT_ID += 1
+    return _NEXT_ID
 
 
 @dataclasses.dataclass

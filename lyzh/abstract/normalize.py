@@ -1,21 +1,27 @@
-"""求值器, 将一个值转换为它的 normal form, 所谓 NbE (normalized by evaluation)
+"""\
+# Normalizer
+
+求值器, 将一个值转换为它的 normal form, 所谓 NbE (normalized by evaluation)
 就是在编译期间将可以计算的表达式通过求值 (evaluation) 转换为 normal form, 以供后续类型检查使用的算法理念.
 
 有趣的是, 如果你将 ast.Univ 和 ast.FnType 抛去, 仅仅留下 ast.App, ast.Ref 和 ast.Fn,
 那么这个求值器可以看作是 UTLC (untyped lambda calculus) 的求值器! 这也侧面说明了, 到达了
-abstract syntax 层面之后, 这些数值已经失去了相应的类型信息, 进行无类型的单纯的变量替换与求值."""
+abstract syntax 层面之后, 这些数值已经失去了相应的类型信息, 进行无类型的单纯的变量替换与求值.
+
+另外, 求值同样能被看作 constant folding (常量传播) 的一种过程, 我们可以毫不夸张地称一个求值器为
+inliner (内联器). 此时, 你就已经学会了 Scala 3 中 inline 关键词及其元编程机制的原理了.
+"""
 
 import dataclasses
 import typing
 
 import lyzh.abstract.data as ast
 import lyzh.core as core
-import lyzh.abstract.rename as rename
+from lyzh.abstract.rename import rename
 
 
 @dataclasses.dataclass
 class Normalizer:
-    ids: core.IDs
     # env 在学术里又叫做 rho, ρ, evaluation context, evaluation environment 等等,
     # 要时刻注意这里的映射值的结构是 ast.Term, 和 ast.Locals 不同, 它可以是类型 (type term),
     # 也可以是值 (value term), 因为这里要做的事情无非就是变量替换 (substitution).
@@ -30,7 +36,7 @@ class Normalizer:
             case ast.Ref(v):
                 try:
                     # 进行变量替换, 并且刷新内部变量的引用.
-                    return self.term(rename.Renamer(self.ids).rename(self.env[v.id]))
+                    return self.term(rename(self.env[v.id]))
                 except KeyError:
                     return tm
             case ast.App(f, x):

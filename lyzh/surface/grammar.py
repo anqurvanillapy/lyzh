@@ -1,4 +1,7 @@
-"""Surface syntax, 语言的文本语法, 模仿的 Rust 风格. 这个文件可以只看以下 EBNF 规则, 其他跳过不看.
+"""\
+# Surface syntax
+
+语言的文本语法, 模仿的 Rust 风格. 这个文件可以只看以下 EBNF 规则, 其他跳过不看.
 
 EBNF 规则:
 
@@ -17,6 +20,16 @@ EBNF 规则:
 
     primary_expr = ref
                  | paren_expr
+
+## 什么是 surface、concrete、abstract 语法
+
+通常来说, 源代码解析之后的结果一般都是 AST (abstract syntax tree), 但在 lyzh 中,
+我们需要对语法树进行求值操作 (normalize, 见后续代码), 所以将源代码解析后的结果称作 concrete
+syntax tree (CST).
+
+然而, 语言是有一层最外层的语法的, 在通常情况下我们称作 "grammar", 或者, 在 lyzh 中,
+我们称其为 surface syntax (注意这里就没有 tree 了), 与 concrete、abstract 等形容词保持一致,
+并体现类似 high/mid/low 的层次.
 """
 
 import typing

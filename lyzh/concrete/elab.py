@@ -1,7 +1,11 @@
-"""Elaborator, 类型检查器, 之所以叫这个名字, 是因为更高级的类型检查器是可以给用户提示更多的信息的,
+"""\
+# Elaborator
+
+类型检查器, 之所以叫这个名字, 是因为更高级的类型检查器是可以给用户提示更多的类型信息的,
 后续高级的功能包括 holes (也叫 goals), implicit arguments (隐式参数, 即自动填写类型等),
 pruning 和 first-class polymorphism (总之就是猜类型猜的更智能) 等, 另见著名的动物园项目
-AndrasKovacs/elaboration-zoo."""
+AndrasKovacs/elaboration-zoo.
+"""
 
 import dataclasses
 import typing
@@ -11,7 +15,7 @@ import lyzh.concrete.data as cst
 import lyzh.abstract.data as ast
 import lyzh.abstract.normalize as normalize
 import lyzh.abstract.unify as unify
-import lyzh.abstract.rename as rename
+from lyzh.abstract.rename import rename
 
 
 class Error(Exception): ...
@@ -21,7 +25,6 @@ class Error(Exception): ...
 class Elaborator:
     """类型检查器."""
 
-    ids: core.IDs
     globals: ast.Globals = dataclasses.field(default_factory=dict)
     locals: ast.Locals = dataclasses.field(default_factory=dict)
 
@@ -54,9 +57,11 @@ class Elaborator:
                 #        Γ , x : A ⊢ M : B
                 # --------------------------------- function introduction rule
                 # Γ ⊢ λ (x : A) → M : π (x : A) → B
-                match self.nf().term(typ):
+                match normalize.Normalizer().term(typ):
                     case ast.FnType(p, b):
-                        body_type = self.nf().subst((p.name, ast.Ref(v)), b)
+                        body_type = normalize.Normalizer().subst(
+                            (p.name, ast.Ref(v)), b
+                        )
                         param = core.Param[ast.Term](v, p.type)
                         return ast.Fn(param, self.guarded_check(param, body, body_type))
                     case typ:
@@ -64,8 +69,8 @@ class Elaborator:
             # 其余的表达式进行类型推导, 用推导的类型和期盼的类型判断是否一致.
             case _:
                 tm, got = self.infer(e)
-                got = self.nf().term(got)
-                typ = self.nf().term(typ)
+                got = normalize.Normalizer().term(got)
+                typ = normalize.Normalizer().term(typ)
                 if self.unify(got, typ):  # 一致性检查
                     return tm
                 raise Error(f"{e.loc}: expected '{typ}', got '{got}'")
@@ -86,8 +91,8 @@ class Elaborator:
                     d = self.globals[v.id]
                     return (
                         # 将全局定义转换成对应的值和类型, 并且刷新内部的变量引用.
-                        self.rename(normalize.to_value(d)),
-                        self.rename(normalize.to_type(d)),
+                        rename(normalize.to_value(d)),
+                        rename(normalize.to_type(d)),
                     )
                 except KeyError:
                     # 由于提前做过作用域检查, 所以不可能在本地和全局都不存在.
@@ -115,9 +120,9 @@ class Elaborator:
                         # 在参数 p 的保护下检查参数 x 的类型必须是函数的参数 p 的类型.
                         x_tm = self.guarded_check(p, x, p.type)
                         # 表达式的类型即 b, 但是要将 b 内的 p 替换成 x.
-                        typ = self.nf().subst((p.name, x_tm), b)
+                        typ = normalize.Normalizer().subst((p.name, x_tm), b)
                         # 尝试对表达式进行计算.
-                        tm = self.nf().apply(f_tm, x_tm)
+                        tm = normalize.Normalizer().apply(f_tm, x_tm)
                         return tm, typ
                     case typ:
                         raise Error(f"{f.loc}: expected function type, got '{typ}'")
@@ -152,14 +157,6 @@ class Elaborator:
             pass
         return ret
 
-    def nf(self) -> normalize.Normalizer:
-        """获取求值器."""
-        return normalize.Normalizer(self.ids)
-
     def unify(self, lhs: ast.Term, rhs: ast.Term) -> bool:
         """检查两个值是否相等."""
-        return unify.Unifier(self.ids, self.globals).unify(lhs, rhs)
-
-    def rename(self, tm: ast.Term) -> ast.Term:
-        """刷新值内部的变量引用."""
-        return rename.Renamer(self.ids).rename(tm)
+        return unify.Unifier(self.globals).unify(lhs, rhs)

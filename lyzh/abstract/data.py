@@ -1,4 +1,8 @@
-"""Abstract syntax, 这个层级的值能够被深度求值, 但也可能是没法继续求值的形式, 即 normal form."""
+"""\
+# Abstract syntax
+
+这个层级的值能够被深度求值, 但也可能是没法继续求值的形式, 即 normal form.
+"""
 
 import dataclasses
 import typing
