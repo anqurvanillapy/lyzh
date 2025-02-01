@@ -65,7 +65,7 @@ class Elaborator:
                         param = core.Param[ast.Term](v, p.type)
                         return ast.Fn(param, self.guarded_check(param, body, body_type))
                     case typ:
-                        raise Error(f"{loc}: expected '{typ}', got function type")
+                        raise Error(f"{loc}: expected function type, got '{typ}'")
             # 其余的表达式进行类型推导, 用推导的类型和期盼的类型判断是否一致.
             case _:
                 tm, got = self.infer(e)
