@@ -72,7 +72,7 @@ class Normalizer:
         """模拟函数调用, 如果 f 是函数, 则不断用它的函数体进行变量替换."""
         ret = f
         for x in args:
-            match f:
+            match ret:
                 case ast.Fn(p, b):
                     ret = self.subst((p.name, x), b)
                 case _:
