@@ -145,18 +145,6 @@ class Elaborator:
             pass
         return ret
 
-    def guarded_infer(
-        self, p: core.Param[ast.Term], e: cst.Expr
-    ) -> typing.Tuple[ast.Term, ast.Term]:
-        """在 p 的保护下 (即将 p 加入到本地变量中, 推导完毕后删除), 推导表达式 e 的类型."""
-        self.locals[p.name.id] = p.type
-        ret = self.infer(e)
-        try:
-            del self.locals[p.name.id]
-        except KeyError:
-            pass
-        return ret
-
     def unify(self, lhs: ast.Term, rhs: ast.Term) -> bool:
         """检查两个值是否相等."""
         return unify.Unifier(self.globals).unify(lhs, rhs)
